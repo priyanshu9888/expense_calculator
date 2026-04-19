@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="SplitLedger is a free group expense tracker and bill splitter for tracking shared costs, payments, and settlements among friends, roommates, and travel groups." />
+<meta name="keywords" content="group expense tracker, bill splitter, shared expenses, expense calculator, trip expense tracker, roommate expenses, split bill calculator" />
+<meta name="robots" content="index, follow" />
+<title>SplitLedger — Expense Calculator</title>
+<link rel="canonical" href="https://priyanshu9888.github.io/expense_calculator/expense.html" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta property="og:title" content="SplitLedger — Free Group Expense Tracker" />
+<meta property="og:description" content="SplitLedger helps you split bills, track group payments, and settle expenses with friends and family." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://priyanshu9888.github.io/expense_calculator/expense.html" />
+<meta property="og:site_name" content="SplitLedger" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SplitLedger — Free Group Expense Tracker" />
+<meta name="twitter:description" content="SplitLedger helps you split bills, track group payments, and settle expenses with friends and family." />
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SplitLedger",
+    "url": "https://priyanshu9888.github.io/expense_calculator/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "SplitLedger is a free web-based group expense tracker and bill splitter. Track shared expenses, payments, and settlements for friends, travel groups, and roommates.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e29;
+  --border:#252a38;--border2:#2f3548;
+  --text:#e8ecf4;--muted:#606882;--muted2:#8892aa;
+  --gold:#f0b429;--gold2:#ffd166;
+  --green:#22c55e;--red:#ef4444;--blue:#60a5fa;
+  --purple:#a78bfa;--teal:#2dd4bf;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(0,0,0,.5);
+  --t:.18s ease;
+  --fn:'JetBrains Mono',monospace;
+  --fu:'Syne',sans-serif;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fu);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.app-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:15px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800;letter-spacing:-.02em}
+.logo-icon{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#0d0f14;font-weight:800}
+.logo span{color:var(--gold)}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.hero{background:linear-gradient(135deg,rgba(240,180,41,.14),rgba(45,212,191,.08));border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:26px;display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;margin-bottom:26px}
+.hero h1{font-size:clamp(2rem,3vw,3rem);line-height:1.05;max-width:12ch;margin-bottom:14px}
+.hero p{max-width:42rem;color:var(--muted2);font-size:1rem;line-height:1.8;margin-bottom:18px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+.hero-stats{display:grid;gap:10px}
+.feature-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:13px 14px;color:var(--text);font-size:.92rem;font-weight:600}
+
+.about-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:grid;gap:14px;margin-top:24px}
+.about-section h2{font-size:1.05rem;color:var(--text)}
+.about-section p{color:var(--muted2);line-height:1.8}
+
+/* LAYOUT */
+.main{max-width:1180px;margin:0 auto;padding:26px 16px 80px}
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:26px}
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px;position:relative;overflow:hidden}
+.summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)}
+.summary-card.green::before{background:var(--green)}
+.summary-card.blue::before{background:var(--blue)}
+.summary-card.purple::before{background:var(--purple)}
+.summary-card.teal::before{background:var(--teal)}
+.summary-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.summary-value{font-family:var(--fn);font-size:1.35rem;font-weight:600;color:var(--gold)}
+.summary-card.green .summary-value{color:var(--green)}
+.summary-card.blue  .summary-value{color:var(--blue)}
+.summary-card.purple .summary-value{color:var(--purple)}
+.summary-card.teal  .summary-value{color:var(--teal)}
+
+.grid{display:grid;grid-template-columns:300px 1fr;gap:17px;align-items:start}
+.grid-left,.grid-right{display:flex;flex-direction:column;gap:17px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-header{padding:13px 17px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:9px}
+.card-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);display:flex;align-items:center;gap:7px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.card-body{padding:14px 17px}
+
+/* INPUTS */
+.form-row{display:flex;gap:7px;margin-bottom:9px}
+.form-col{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--fu);font-size:.875rem;padding:8px 11px;outline:none;transition:border-color var(--t),box-shadow var(--t);width:100%}
+.input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,180,41,.1)}
+.input::placeholder{color:var(--muted)}
+select.input option{background:var(--bg3)}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--fu);font-size:.77rem;font-weight:700;letter-spacing:.04em;padding:8px 13px;transition:all var(--t);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--gold);color:#0d0f14}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-ghost{background:var(--bg3);color:var(--muted2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:rgba(239,68,68,.22)}
+.btn-wa{background:#25d366;color:#fff}
+.btn-wa:hover{background:#1ebe5d;transform:translateY(-1px)}
+.btn-pdf{background:rgba(239,68,68,.15);color:#ff6b6b;border:1px solid rgba(239,68,68,.3)}
+.btn-pdf:hover{background:rgba(239,68,68,.25)}
+.btn-sm{padding:5px 10px;font-size:.7rem}
+.btn-icon{padding:5px 8px;font-size:.85rem;line-height:1}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:2px 9px;font-size:.7rem;font-weight:600}
+.badge-gold{border-color:rgba(240,180,41,.35);color:var(--gold);background:rgba(240,180,41,.08)}
+.badge-green{border-color:rgba(34,197,94,.35);color:var(--green);background:rgba(34,197,94,.08)}
+.badge-blue{border-color:rgba(96,165,250,.35);color:var(--blue);background:rgba(96,165,250,.08)}
+.badge-teal{border-color:rgba(45,212,191,.35);color:var(--teal);background:rgba(45,212,191,.08)}
+
+/* MEMBER LIST */
+.member-list{display:flex;flex-direction:column;gap:6px}
+.member-item{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 11px;animation:fadeIn .18s ease}
+.member-avatar{width:26px;height:26px;border-radius:50%;background:var(--gold);color:#0d0f14;font-size:.63rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.member-name{flex:1;margin-left:9px;font-size:.84rem;font-weight:600}
+
+/* ITEM LIST */
+.item-list{display:flex;flex-direction:column;gap:9px}
+.item-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;animation:fadeIn .18s ease}
+.item-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px}
+.item-name{font-size:.875rem;font-weight:700}
+.item-amount{font-family:var(--fn);font-size:.875rem;font-weight:600;color:var(--gold)}
+.item-per-head{font-family:var(--fn);font-size:.68rem;color:var(--muted);margin-top:2px;text-align:right}
+.item-participants{display:flex;flex-wrap:wrap;gap:4px}
+.item-actions{display:flex;gap:4px;margin-top:8px}
+
+/* PAYMENT LIST */
+.payment-list{display:flex;flex-direction:column;gap:7px}
+.payment-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;animation:fadeIn .18s ease}
+.payment-who{font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:7px}
+.payment-amount{font-family:var(--fn);font-size:.875rem;font-weight:600;color:var(--green)}
+
+/* BALANCE TABLE */
+.balance-table{width:100%;border-collapse:collapse}
+.balance-table th{text-align:left;font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 12px 9px;border-bottom:1px solid var(--border)}
+.balance-table td{padding:9px 12px;font-size:.82rem;border-bottom:1px solid var(--border)}
+.balance-table tr:last-child td{border-bottom:none}
+.balance-table tr:hover td{background:rgba(255,255,255,.018)}
+.num{font-family:var(--fn)}
+.positive{color:var(--green)}
+.negative{color:var(--red)}
+.neutral{color:var(--muted2)}
+
+/* SETTLEMENT */
+.settlement-list{display:flex;flex-direction:column;gap:8px}
+.settlement-item{display:flex;align-items:center;gap:11px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;animation:fadeIn .18s ease}
+.settlement-arrow{color:var(--gold);font-size:1.1rem;flex-shrink:0}
+.settlement-text{font-size:.84rem;flex:1}
+.settlement-text strong{color:var(--text)}
+.settlement-amount{font-family:var(--fn);font-size:.875rem;font-weight:600;color:var(--gold)}
+
+/* MULTI-SELECT */
+.multi-select-wrapper{position:relative}
+.multi-select-trigger{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--fu);font-size:.875rem;padding:8px 11px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color var(--t);user-select:none}
+.multi-select-trigger:hover,.multi-select-trigger.open{border-color:var(--gold)}
+.multi-select-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);z-index:200;max-height:180px;overflow-y:auto;box-shadow:var(--shadow);display:none}
+.multi-select-dropdown.open{display:block;animation:dropIn .13s ease}
+.ms-option{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;font-size:.84rem;transition:background var(--t)}
+.ms-option:hover{background:var(--bg3)}
+.ms-option input[type=checkbox]{accent-color:var(--gold);width:14px;height:14px;cursor:pointer}
+
+/* TOGGLE */
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border2);border-radius:99px;cursor:pointer;transition:background var(--t),border-color var(--t)}
+.toggle-slider::before{content:'';position:absolute;width:12px;height:12px;background:var(--muted);border-radius:50%;top:3px;left:3px;transition:transform var(--t),background var(--t)}
+.toggle input:checked+.toggle-slider{background:rgba(240,180,41,.15);border-color:var(--gold)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);background:var(--gold)}
+.toggle-label{font-size:.73rem;font-weight:700;color:var(--muted2);letter-spacing:.04em}
+
+/* MISC */
+.divider{height:1px;background:var(--border);margin:11px 0}
+.empty{text-align:center;padding:22px 13px;color:var(--muted);font-size:.76rem}
+.empty-icon{font-size:1.6rem;margin-bottom:6px;opacity:.4}
+.info-box{background:rgba(240,180,41,.07);border:1px solid rgba(240,180,41,.2);border-radius:var(--radius-sm);padding:9px 12px;font-size:.75rem;color:var(--muted2);line-height:1.6;margin-bottom:11px}
+.info-box strong{color:var(--gold)}
+.share-bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 17px;border-top:1px solid var(--border);background:rgba(0,0,0,.18)}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border2);border-radius:99px;padding:8px 19px;font-size:.77rem;font-weight:600;box-shadow:var(--shadow);transition:transform .24s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;align-items:center;justify-content:center;padding:17px}
+.modal-overlay.open{display:flex;animation:fadeIn .13s ease}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);width:100%;max-width:430px;box-shadow:var(--shadow);animation:slideUp .17s ease}
+.modal-header{padding:15px 17px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.875rem}
+.modal-body{padding:17px}
+.modal-footer{padding:12px 17px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(17px)}to{opacity:1;transform:translateY(0)}}
+
+/* RESPONSIVE */
+@media(max-width:800px){.grid{grid-template-columns:1fr}.app-header{padding:12px 14px}.main{padding:17px 12px 60px}.summary-strip{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.summary-strip{grid-template-columns:1fr}.form-row{flex-direction:column}.header-actions .btn span{display:none}}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-icon">₹</div>
+    Split<span>Ledger</span>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-ghost btn-sm" href="index.html">← Home</a>
+    <button class="btn btn-pdf" onclick="exportPDF()">📄 <span>PDF</span></button>
+    <button class="btn btn-wa"  onclick="shareWhatsApp()">💬 <span>WhatsApp</span></button>
+    <button class="btn btn-danger btn-sm" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</header>
+
+<section class="hero" id="hero">
+  <div>
+    <h1>SplitLedger — Free group expense tracker and bill splitter</h1>
+    <p>Track shared costs, split bills evenly or by share, record payments, and settle group expenses in seconds. Perfect for trips, roommates, parties, and shared household spending.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#member-input">Start tracking</a>
+      <a class="btn btn-ghost" href="#features">Why SplitLedger?</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="feature-card">Split bills across friends, roommates, family, and travel groups</div>
+    <div class="feature-card">Log payments, balances, and settlement instructions in one place</div>
+    <div class="feature-card">Export your expense summary as PDF or share via WhatsApp</div>
+  </div>
+</section>
+
+<main class="main">
+  <div class="summary-strip">
+    <div class="summary-card">
+      <div class="summary-label">Total Bill</div>
+      <div class="summary-value" id="s-total">₹0.00</div>
+    </div>
+    <div class="summary-card blue">
+      <div class="summary-label">Members</div>
+      <div class="summary-value" id="s-members">0</div>
+    </div>
+    <div class="summary-card green">
+      <div class="summary-label">Total Paid</div>
+      <div class="summary-value" id="s-paid">₹0.00</div>
+    </div>
+    <div class="summary-card teal">
+      <div class="summary-label">Remaining</div>
+      <div class="summary-value" id="s-remaining">₹0.00</div>
+    </div>
+    <div class="summary-card purple">
+      <div class="summary-label">Items</div>
+      <div class="summary-value" id="s-items">0</div>
+    </div>
+  </div>
+
+  <section class="about-section" id="features">
+    <h2>Built for shared expenses and group bill splitting</h2>
+    <p>SplitLedger is a lightweight expense calculator that runs entirely in your browser. Add members, assign item costs, record who paid, and see exactly what each person owes — no signup or installation required.</p>
+    <p>It is designed to help groups manage everyday spending, travel expenses, roommate bills, event costs, and group purchases with clarity and fairness.</p>
+  </section>
+
+  <div class="grid">
+    <div class="grid-left">
+
+      <!-- MEMBERS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span>Group Members</div>
+          <span id="member-count" class="badge badge-gold">0</span>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <input id="member-input" class="input" placeholder="Member name…" onkeydown="if(event.key==='Enter')addMember()" />
+            <button class="btn btn-primary" onclick="addMember()">Add</button>
+          </div>
+          <div id="member-list" class="member-list">
+            <div class="empty"><div class="empty-icon">👥</div>No members yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot" style="background:var(--green)"></span>Payments Made</div>
+          <span id="payment-count" class="badge badge-green">0</span>
+        </div>
+        <div class="card-body">
+          <div class="info-box">
+            Record <strong>actual cash/UPI payments</strong> made by each person. This amount gets <strong>credited</strong> against their share — reducing what they still owe.
+          </div>
+          <div class="form-col">
+            <select id="payer-select" class="input">
+              <option value="">Who paid?</option>
+            </select>
+            <div class="form-row">
+              <input id="payment-amount" class="input" type="number" min="0" step="0.01" placeholder="Amount (₹)" />
+              <button class="btn btn-primary" onclick="addPayment()">Add</button>
+            </div>
+          </div>
+          <div id="payment-list" class="payment-list">
+            <div class="empty"><div class="empty-icon">💳</div>No payments yet</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid-right">
+
+      <!-- ITEMS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Expense Items</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="toggle-label">Equal split</span>
+            <label class="toggle">
+              <input type="checkbox" id="equal-split-toggle" onchange="toggleEqualSplit()" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-col">
+            <div class="form-row">
+              <input id="item-name"  class="input" placeholder="Item (e.g. Pizza)" />
+              <input id="item-price" class="input" style="max-width:130px" type="number" min="0" step="0.01" placeholder="₹ Price" />
+            </div>
+            <div id="participant-wrapper">
+              <div class="multi-select-wrapper" id="ms-wrapper">
+                <div class="multi-select-trigger" id="ms-trigger" onclick="toggleDropdown()">
+                  <span id="ms-label" style="color:var(--muted)">Select participants…</span>
+                  <span>▾</span>
+                </div>
+                <div class="multi-select-dropdown" id="ms-dropdown"></div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="addItem()" style="align-self:flex-start">+ Add Item</button>
+          </div>
+          <div class="divider"></div>
+          <div id="item-list" class="item-list">
+            <div class="empty"><div class="empty-icon">🧾</div>No items yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BALANCE SHEET -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot" style="background:var(--purple)"></span>Balance Sheet</div>
+          <button class="btn btn-ghost btn-sm" onclick="renderAll()">↻ Refresh</button>
+        </div>
+        <div style="padding:9px 17px 0;font-size:.7rem;color:var(--muted);font-family:var(--fn)">
+          Balance = Amount Paid − Share Owed &nbsp;|&nbsp; <span style="color:var(--green)">+</span> receives &nbsp;·&nbsp; <span style="color:var(--red)">−</span> owes
+        </div>
+        <div id="balance-container" style="padding-bottom:4px">
+          <div class="empty" style="padding:26px"><div class="empty-icon">⚖️</div>Add members &amp; items to see balances</div>
+        </div>
+      </div>
+
+      <!-- SETTLEMENT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot" style="background:var(--gold)"></span>Settlement Plan</div>
+          <span class="badge badge-teal" id="settle-count">0 transactions</span>
+        </div>
+        <div class="card-body">
+          <div id="settlement-container">
+            <div class="empty"><div class="empty-icon">✅</div>All settled up!</div>
+          </div>
+        </div>
+        <div class="share-bar">
+          <button class="btn btn-pdf btn-sm" onclick="exportPDF()">📄 Download PDF</button>
+          <button class="btn btn-wa btn-sm"  onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">✎ Edit Item <button class="btn btn-ghost btn-icon" onclick="closeModal('edit-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-col">
+        <input id="edit-item-name"  class="input" placeholder="Item name" />
+        <input id="edit-item-price" class="input" type="number" min="0" step="0.01" placeholder="₹ Price" />
+        <div class="multi-select-wrapper" id="edit-ms-wrapper">
+          <div class="multi-select-trigger" id="edit-ms-trigger" onclick="toggleEditDropdown()">
+            <span id="edit-ms-label" style="color:var(--muted)">Select participants…</span><span>▾</span>
+          </div>
+          <div class="multi-select-dropdown" id="edit-ms-dropdown"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditItem()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-header">⚠ Confirm Reset <button class="btn btn-ghost btn-icon" onclick="closeModal('confirm-modal')">✕</button></div>
+    <div class="modal-body" style="font-size:.875rem;color:var(--muted2);line-height:1.7">
+      This will erase all members, items, and payments. Cannot be undone.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="resetAll()">Yes, Reset Everything</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   SPLITLEDGER — Full Expense Splitting App
+   
+   BALANCE LOGIC (important):
+   ─────────────────────────────────────────────────────────
+   Each person's share = sum of (item_price / participants) for items they joined.
+   Each person's paid  = sum of all payments they recorded.
+   Balance             = paid − share_owed
+     Positive (+) → they paid MORE than their share → they should RECEIVE money
+     Negative (−) → they paid LESS than their share → they still OWE money
+   
+   Example: 2 people, bill = ₹200, equal split → each owes ₹100
+   Person A paid ₹50 (their own purchase) → balance = 50−100 = −₹50 (owes ₹50)
+   Person B paid ₹200 (full restaurant bill) → balance = 200−100 = +₹100 (receives ₹100)
+   Wait — total paid = ₹250 but bill = ₹200. That's fine; the extra ₹50 A paid
+   was their own item. The settlement correctly shows A pays B ₹50.
+═══════════════════════════════════════════════════════════ */
+
+// ── STATE ────────────────────────────────────────────────────
+let state = {
+  members:    [],   // { id, name }
+  items:      [],   // { id, name, price, participants:[id] }
+  payments:   [],   // { id, payerId, amount }
+  equalSplit: false
+};
+let editingItemId = null;
+
+// ── PERSISTENCE ──────────────────────────────────────────────
+function saveState() {
+  try { localStorage.setItem('splitledger_v2', JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem('splitledger_v2');
+    if (raw) state = { members:[], items:[], payments:[], equalSplit:false, ...JSON.parse(raw) };
+  } catch(e) {}
+  document.getElementById('equal-split-toggle').checked = !!state.equalSplit;
+}
+
+// ── UTILITIES ────────────────────────────────────────────────
+const uid        = () => Math.random().toString(36).slice(2,9);
+const fmtAmt     = n  => '₹' + Math.abs(n).toFixed(2);
+const initials   = name => name.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const memberName = id   => { const m=state.members.find(m=>m.id===id); return m?m.name:'?'; };
+
+function toast(msg, color='var(--gold)') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.color = color;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=> el.classList.remove('show'), 2500);
+}
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── MEMBERS ──────────────────────────────────────────────────
+function addMember() {
+  const inp  = document.getElementById('member-input');
+  const name = inp.value.trim();
+  if (!name) { toast('Enter a name first','var(--red)'); return; }
+  if (state.members.find(m=>m.name.toLowerCase()===name.toLowerCase())) { toast('Already exists','var(--red)'); return; }
+  state.members.push({ id:uid(), name });
+  inp.value = '';
+  saveState(); renderAll();
+  toast(`${name} added ✓`, 'var(--green)');
+}
+
+function removeMember(id) {
+  const name = memberName(id);
+  state.members  = state.members.filter(m=>m.id!==id);
+  state.items    = state.items.map(i=>({...i, participants:i.participants.filter(p=>p!==id)}));
+  state.payments = state.payments.filter(p=>p.payerId!==id);
+  saveState(); renderAll();
+  toast(`${name} removed`, 'var(--muted2)');
+}
+
+// ── ITEMS ────────────────────────────────────────────────────
+function addItem() {
+  const name  = document.getElementById('item-name').value.trim();
+  const price = parseFloat(document.getElementById('item-price').value);
+  const parts = state.equalSplit ? state.members.map(m=>m.id) : getSelectedParticipants();
+  if (!name)               { toast('Enter item name','var(--red)'); return; }
+  if (!price||price<=0)    { toast('Enter valid price','var(--red)'); return; }
+  if (!parts.length)       { toast('Select at least one participant','var(--red)'); return; }
+  state.items.push({ id:uid(), name, price, participants:parts });
+  document.getElementById('item-name').value  = '';
+  document.getElementById('item-price').value = '';
+  clearMultiSelect();
+  saveState(); renderAll();
+  toast(`${name} added ✓`, 'var(--blue)');
+}
+
+function deleteItem(id) {
+  const item = state.items.find(i=>i.id===id);
+  state.items = state.items.filter(i=>i.id!==id);
+  saveState(); renderAll();
+  toast(`"${item.name}" removed`, 'var(--muted2)');
+}
+
+function openEditItem(id) {
+  editingItemId = id;
+  const item = state.items.find(i=>i.id===id);
+  document.getElementById('edit-item-name').value  = item.name;
+  document.getElementById('edit-item-price').value = item.price;
+  buildEditDropdown(item.participants);
+  openModal('edit-modal');
+}
+
+function saveEditItem() {
+  const item  = state.items.find(i=>i.id===editingItemId);
+  if (!item) return;
+  const name  = document.getElementById('edit-item-name').value.trim();
+  const price = parseFloat(document.getElementById('edit-item-price').value);
+  const parts = getEditSelectedParticipants();
+  if (!name||!price||price<=0||!parts.length) { toast('Fill all fields','var(--red)'); return; }
+  item.name=name; item.price=price; item.participants=parts;
+  saveState(); renderAll();
+  closeModal('edit-modal');
+  toast('Item updated ✓','var(--green)');
+}
+
+// ── PAYMENTS ─────────────────────────────────────────────────
+/**
+ * addPayment
+ * Records an actual payment by a member.
+ * This payment amount is CREDITED to that person's "paid" column.
+ * Their net balance = paid − owed.
+ * If they paid less than their share → negative balance → they owe the difference.
+ * If they paid more than their share → positive balance → others owe them.
+ */
+function addPayment() {
+  const payerId = document.getElementById('payer-select').value;
+  const amount  = parseFloat(document.getElementById('payment-amount').value);
+  if (!payerId)         { toast('Select who paid','var(--red)'); return; }
+  if (!amount||amount<=0){ toast('Enter valid amount','var(--red)'); return; }
+  state.payments.push({ id:uid(), payerId, amount });
+  document.getElementById('payment-amount').value = '';
+  saveState(); renderAll();
+  toast(`Payment by ${memberName(payerId)} recorded ✓`, 'var(--green)');
+}
+
+function deletePayment(id) {
+  state.payments = state.payments.filter(p=>p.id!==id);
+  saveState(); renderAll();
+  toast('Payment removed','var(--muted2)');
+}
+
+// ── EQUAL SPLIT ───────────────────────────────────────────────
+function toggleEqualSplit() {
+  state.equalSplit = document.getElementById('equal-split-toggle').checked;
+  const w = document.getElementById('participant-wrapper');
+  w.style.opacity = state.equalSplit ? '0.4' : '1';
+  w.style.pointerEvents = state.equalSplit ? 'none' : '';
+  saveState(); renderAll();
+}
+
+// ── CORE CALCULATION ─────────────────────────────────────────
+/**
+ * calculateBalances
+ *
+ * Returns { memberId: { owed, paid, balance } }
+ *
+ * owed    = their share of all items they participated in
+ * paid    = sum of payments they recorded
+ * balance = paid − owed
+ *           positive → they overpaid → receive money
+ *           negative → they underpaid → owe money
+ *
+ * KEY INSIGHT: If you spent ₹50 on snacks (your own payment) and your
+ * share of the total bill is ₹100, your balance = 50 − 100 = −₹50.
+ * You only need to pay ₹50 more to the person who fronted the big bill.
+ * Your ₹50 snack payment already counted as your partial contribution.
+ */
+function calculateBalances() {
+  const res = {};
+  state.members.forEach(m => { res[m.id] = { owed:0, paid:0, balance:0 }; });
+
+  if (state.equalSplit) {
+    const total = state.items.reduce((s,i)=>s+i.price,0);
+    const share = state.members.length ? total/state.members.length : 0;
+    state.members.forEach(m => { res[m.id].owed = share; });
+  } else {
+    state.items.forEach(item => {
+      if (!item.participants.length) return;
+      const share = item.price / item.participants.length;
+      item.participants.forEach(pid => {
+        if (res[pid] !== undefined) res[pid].owed += share;
+      });
+    });
+  }
+
+  state.payments.forEach(p => {
+    if (res[p.payerId] !== undefined) res[p.payerId].paid += p.amount;
+  });
+
+  state.members.forEach(m => {
+    res[m.id].balance = res[m.id].paid - res[m.id].owed;
+  });
+
+  return res;
+}
+
+/**
+ * settleDebts — greedy minimum-transactions algorithm.
+ * Repeatedly matches the largest debtor with the largest creditor.
+ */
+function settleDebts(balances) {
+  const cred = [], debt = [];
+  state.members.forEach(m => {
+    const b = balances[m.id].balance;
+    if (b >  0.005) cred.push({ id:m.id, amount: b });
+    if (b < -0.005) debt.push({ id:m.id, amount:-b });
+  });
+  cred.sort((a,b)=>b.amount-a.amount);
+  debt.sort((a,b)=>b.amount-a.amount);
+
+  const txns = [];
+  let ci=0, di=0;
+  while (ci<cred.length && di<debt.length) {
+    const c=cred[ci], d=debt[di];
+    const amt = Math.min(c.amount, d.amount);
+    txns.push({ from:d.id, to:c.id, amount:amt });
+    c.amount -= amt; d.amount -= amt;
+    if (c.amount < 0.005) ci++;
+    if (d.amount < 0.005) di++;
+  }
+  return txns;
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+function renderAll() {
+  renderMembers();
+  renderPayerSelect();
+  buildMultiSelect();
+  updateMsLabel();
+  renderItems();
+  renderPayments();
+  const balances = calculateBalances();
+  renderBalances(balances);
+  const txns = settleDebts(balances);
+  renderSettlement(txns);
+  updateSummary();
+}
+
+function renderMembers() {
+  const list = document.getElementById('member-list');
+  document.getElementById('member-count').textContent = state.members.length;
+  if (!state.members.length) { list.innerHTML='<div class="empty"><div class="empty-icon">👥</div>No members yet</div>'; return; }
+  list.innerHTML = state.members.map(m=>`
+    <div class="member-item">
+      <div class="member-avatar">${initials(m.name)}</div>
+      <div class="member-name">${m.name}</div>
+      <button class="btn btn-ghost btn-icon" onclick="removeMember('${m.id}')" title="Remove">✕</button>
+    </div>`).join('');
+}
+
+function renderPayerSelect() {
+  const sel = document.getElementById('payer-select');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Who paid?</option>' +
+    state.members.map(m=>`<option value="${m.id}" ${m.id===cur?'selected':''}>${m.name}</option>`).join('');
+}
+
+function renderItems() {
+  const list = document.getElementById('item-list');
+  document.getElementById('s-items').textContent = state.items.length;
+  if (!state.items.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>No items yet</div>'; return; }
+  list.innerHTML = state.items.map(item => {
+    const perHead = item.participants.length ? `₹${(item.price/item.participants.length).toFixed(2)}/person` : '';
+    return `
+      <div class="item-card">
+        <div class="item-top">
+          <div class="item-name">${item.name}</div>
+          <div>
+            <div class="item-amount">${fmtAmt(item.price)}</div>
+            <div class="item-per-head">${perHead}</div>
+          </div>
+        </div>
+        <div class="item-participants">${item.participants.map(pid=>`<span class="badge badge-blue">${memberName(pid)}</span>`).join('')}</div>
+        <div class="item-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditItem('${item.id}')">✎ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}')">✕ Remove</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderPayments() {
+  const list = document.getElementById('payment-list');
+  document.getElementById('payment-count').textContent = state.payments.length;
+  if (!state.payments.length) { list.innerHTML='<div class="empty"><div class="empty-icon">💳</div>No payments yet</div>'; return; }
+  list.innerHTML = state.payments.map(p=>`
+    <div class="payment-item">
+      <div class="payment-who">
+        <div class="member-avatar" style="width:24px;height:24px;font-size:.6rem">${initials(memberName(p.payerId))}</div>
+        ${memberName(p.payerId)}
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <div class="payment-amount">${fmtAmt(p.amount)}</div>
+        <button class="btn btn-danger btn-icon" onclick="deletePayment('${p.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderBalances(balances) {
+  const container = document.getElementById('balance-container');
+  if (!state.members.length) {
+    container.innerHTML='<div class="empty" style="padding:26px"><div class="empty-icon">⚖️</div>Add members &amp; items to calculate</div>'; return;
+  }
+  const rows = state.members.map(m => {
+    const b = balances[m.id];
+    const cls   = b.balance>0.005?'positive':b.balance<-0.005?'negative':'neutral';
+    const label = b.balance>0.005
+      ? `+${fmtAmt(b.balance)} ← receives`
+      : b.balance<-0.005
+        ? `−${fmtAmt(b.balance)} → owes`
+        : '✓ settled';
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="member-avatar" style="width:24px;height:24px;font-size:.6rem;flex-shrink:0">${initials(m.name)}</div>
+            <div>
+              <div style="font-size:.84rem;font-weight:600">${m.name}</div>
+              <div style="font-size:.63rem;color:var(--muted);font-family:var(--fn)">${fmtAmt(b.paid)} paid − ${fmtAmt(b.owed)} owed</div>
+            </div>
+          </div>
+        </td>
+        <td class="num" style="color:var(--muted2)">${fmtAmt(b.owed)}</td>
+        <td class="num" style="color:var(--green)">${fmtAmt(b.paid)}</td>
+        <td class="num ${cls}" style="font-weight:600">${label}</td>
+      </tr>`;
+  }).join('');
+  container.innerHTML = `
+    <table class="balance-table">
+      <thead><tr><th>Member (paid − owed)</th><th>Share Owed</th><th>Actually Paid</th><th>Net Balance</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderSettlement(txns) {
+  const container = document.getElementById('settlement-container');
+  document.getElementById('settle-count').textContent = `${txns.length} transaction${txns.length!==1?'s':''}`;
+  if (!txns.length) { container.innerHTML='<div class="empty"><div class="empty-icon">✅</div>All settled up! No transfers needed.</div>'; return; }
+  container.innerHTML = '<div class="settlement-list">' +
+    txns.map(t=>`
+      <div class="settlement-item">
+        <div class="settlement-arrow">→</div>
+        <div class="settlement-text"><strong>${memberName(t.from)}</strong> pays <strong>${memberName(t.to)}</strong></div>
+        <div class="settlement-amount">${fmtAmt(t.amount)}</div>
+      </div>`).join('') +
+    '</div>';
+}
+
+function updateSummary() {
+  const total     = state.items.reduce((s,i)=>s+i.price,0);
+  const paid      = state.payments.reduce((s,p)=>s+p.amount,0);
+  const remaining = Math.max(0, total-paid);
+  document.getElementById('s-total').textContent     = fmtAmt(total);
+  document.getElementById('s-paid').textContent      = fmtAmt(paid);
+  document.getElementById('s-remaining').textContent = fmtAmt(remaining);
+  document.getElementById('s-members').textContent   = state.members.length;
+}
+
+// ── MULTI-SELECT ─────────────────────────────────────────────
+function buildMultiSelect() {
+  const dd = document.getElementById('ms-dropdown');
+  dd.innerHTML = '';
+  if (!state.members.length) { dd.innerHTML='<div class="ms-option" style="color:var(--muted)">Add members first</div>'; return; }
+  state.members.forEach(m => {
+    const lbl = document.createElement('label');
+    lbl.className='ms-option';
+    lbl.innerHTML=`<input type="checkbox" value="${m.id}" onchange="updateMsLabel()"> ${m.name}`;
+    dd.appendChild(lbl);
+  });
+}
+
+let _msRef=null;
+function toggleDropdown() {
+  const dd=document.getElementById('ms-dropdown'), tr=document.getElementById('ms-trigger');
+  const open=dd.classList.toggle('open');
+  tr.classList.toggle('open',open);
+  if (open) {
+    _msRef=(e)=>{ if (!document.getElementById('ms-wrapper').contains(e.target)){ dd.classList.remove('open'); tr.classList.remove('open'); document.removeEventListener('click',_msRef); } };
+    setTimeout(()=>document.addEventListener('click',_msRef),0);
+  }
+}
+function getSelectedParticipants() { return [...document.querySelectorAll('#ms-dropdown input:checked')].map(cb=>cb.value); }
+function updateMsLabel() {
+  const sel=getSelectedParticipants(), lbl=document.getElementById('ms-label');
+  lbl.style.color=sel.length?'var(--text)':'var(--muted)';
+  lbl.textContent=sel.length?sel.map(memberName).join(', '):'Select participants…';
+}
+function clearMultiSelect() { document.querySelectorAll('#ms-dropdown input').forEach(cb=>cb.checked=false); updateMsLabel(); }
+
+function buildEditDropdown(selected=[]) {
+  const dd=document.getElementById('edit-ms-dropdown');
+  dd.innerHTML='';
+  state.members.forEach(m=>{
+    const lbl=document.createElement('label');
+    lbl.className='ms-option';
+    lbl.innerHTML=`<input type="checkbox" value="${m.id}" ${selected.includes(m.id)?'checked':''} onchange="updateEditMsLabel()"> ${m.name}`;
+    dd.appendChild(lbl);
+  });
+  updateEditMsLabel();
+}
+let _editMsRef=null;
+function toggleEditDropdown() {
+  const dd=document.getElementById('edit-ms-dropdown'), tr=document.getElementById('edit-ms-trigger');
+  const open=dd.classList.toggle('open');
+  tr.classList.toggle('open',open);
+  if (open) {
+    _editMsRef=(e)=>{ if (!document.getElementById('edit-ms-wrapper').contains(e.target)){ dd.classList.remove('open'); tr.classList.remove('open'); document.removeEventListener('click',_editMsRef); } };
+    setTimeout(()=>document.addEventListener('click',_editMsRef),0);
+  }
+}
+function getEditSelectedParticipants() { return [...document.querySelectorAll('#edit-ms-dropdown input:checked')].map(cb=>cb.value); }
+function updateEditMsLabel() {
+  const sel=getEditSelectedParticipants(), lbl=document.getElementById('edit-ms-label');
+  lbl.style.color=sel.length?'var(--text)':'var(--muted)';
+  lbl.textContent=sel.length?sel.map(memberName).join(', '):'Select participants…';
+}
+
+// ── RESET ────────────────────────────────────────────────────
+function confirmReset() { openModal('confirm-modal'); }
+function resetAll() {
+  state={ members:[], items:[], payments:[], equalSplit:false };
+  document.getElementById('equal-split-toggle').checked=false;
+  saveState(); renderAll();
+  closeModal('confirm-modal');
+  toast('All data cleared','var(--muted2)');
+}
+
+// ── PDF EXPORT ───────────────────────────────────────────────
+function exportPDF() {
+  if (!state.members.length && !state.items.length) { toast('Nothing to export','var(--red)'); return; }
+  if (typeof window.jspdf === 'undefined') { toast('PDF library loading, try again','var(--red)'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const balances = calculateBalances();
+  const txns     = settleDebts(balances);
+  const total    = state.items.reduce((s,i)=>s+i.price,0);
+  const paid     = state.payments.reduce((s,p)=>s+p.amount,0);
+  const date     = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const W=210, mg=18;
+  let y=0;
+
+  // Header
+  doc.setFillColor(13,15,20); doc.rect(0,0,W,44,'F');
+  doc.setTextColor(240,180,41); doc.setFontSize(22); doc.setFont('helvetica','bold');
+  doc.text('SplitLedger',mg,21);
+  doc.setTextColor(160,170,190); doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Group Expense Summary',mg,29);
+  doc.text(`Generated: ${date}`,mg,35);
+
+  // Summary boxes
+  y=52;
+  [{l:'Total Bill',v:`Rs. ${total.toFixed(2)}`,x:mg},
+   {l:'Total Paid',v:`Rs. ${paid.toFixed(2)}`,x:mg+48},
+   {l:'Members',v:`${state.members.length}`,x:mg+96},
+   {l:'Items',v:`${state.items.length}`,x:mg+132}
+  ].forEach(b=>{
+    doc.setFillColor(26,30,41); doc.setDrawColor(37,42,56);
+    doc.roundedRect(b.x,y,44,20,2,2,'FD');
+    doc.setTextColor(96,104,130); doc.setFontSize(7); doc.setFont('helvetica','bold');
+    doc.text(b.l.toUpperCase(),b.x+4,y+7);
+    doc.setTextColor(240,180,41); doc.setFontSize(11); doc.setFont('helvetica','bold');
+    doc.text(b.v,b.x+4,y+16);
+  });
+
+  const section = (title, r,g,b) => {
+    y+=9;
+    doc.setFillColor(r,g,b); doc.rect(mg,y,3,5,'F');
+    doc.setTextColor(r,g,b); doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text(title,mg+6,y+4);
+    doc.setDrawColor(37,42,56); doc.setLineWidth(0.3); doc.line(mg,y+6,W-mg,y+6);
+    y+=10;
+  };
+
+  const row = (left,right,muted=false) => {
+    if (y>265) { doc.addPage(); y=20; }
+    doc.setTextColor(muted?96:220, muted?104:224, muted?130:240);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text(left,mg+3,y);
+    if (right) { doc.text(right,W-mg-3,y,{align:'right'}); }
+    y+=6;
+  };
+
+  y=78;
+  section('GROUP MEMBERS',96,165,250);
+  state.members.forEach(m=>row(`  ${m.name}`, ''));
+
+  section('EXPENSE ITEMS',96,165,250);
+  if (!state.items.length) row('  No items added','',true);
+  state.items.forEach(item=>{
+    const per = item.participants.length?` (Rs. ${(item.price/item.participants.length).toFixed(2)}/person)`:'';
+    const who = item.participants.map(memberName).join(', ');
+    row(`  ${item.name}  [${who}]`, `Rs. ${item.price.toFixed(2)}${per}`);
+  });
+
+  section('PAYMENTS MADE',34,197,94);
+  if (!state.payments.length) row('  No payments recorded','',true);
+  state.payments.forEach(p=>row(`  ${memberName(p.payerId)}`,`Rs. ${p.amount.toFixed(2)}`));
+
+  section('BALANCE SHEET',167,139,250);
+  // formula note
+  if (y>265) { doc.addPage(); y=20; }
+  doc.setTextColor(80,90,120); doc.setFontSize(7.5); doc.setFont('helvetica','italic');
+  doc.text('  Balance = Paid - Share Owed   (+) = receives   (-) = owes',mg+3,y); y+=7;
+
+  state.members.forEach(m=>{
+    if (y>265) { doc.addPage(); y=20; }
+    const b = balances[m.id];
+    const isPos = b.balance>0.005, isNeg=b.balance<-0.005;
+    const status = isPos?`receives Rs. ${Math.abs(b.balance).toFixed(2)}`
+                  :isNeg?`OWES Rs. ${Math.abs(b.balance).toFixed(2)}`
+                  :'SETTLED';
+    doc.setTextColor(220,224,240); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text(`  ${m.name}`,mg+3,y);
+    doc.setTextColor(80,90,120); doc.setFontSize(7.5);
+    doc.text(`  paid Rs.${b.paid.toFixed(2)} - owed Rs.${b.owed.toFixed(2)}`,mg+3,y+4);
+    if (isPos) doc.setTextColor(34,197,94);
+    else if (isNeg) doc.setTextColor(239,68,68);
+    else doc.setTextColor(80,90,120);
+    doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text(status,W-mg-3,y,{align:'right'});
+    y+=9;
+  });
+
+  section('SETTLEMENT PLAN',240,180,41);
+  if (!txns.length) {
+    row('  All settled up! No transfers needed.','',true);
+  } else {
+    txns.forEach(t=>{
+      if (y>265) { doc.addPage(); y=20; }
+      doc.setTextColor(240,180,41); doc.setFontSize(10); doc.text('  →',mg+3,y);
+      doc.setTextColor(220,224,240); doc.setFontSize(9); doc.setFont('helvetica','normal');
+      doc.text(`${memberName(t.from)} pays ${memberName(t.to)}`,mg+10,y);
+      doc.setFont('helvetica','bold'); doc.setTextColor(240,180,41);
+      doc.text(`Rs. ${t.amount.toFixed(2)}`,W-mg-3,y,{align:'right'});
+      y+=7;
+    });
+  }
+
+  // Footer
+  doc.setTextColor(55,62,85); doc.setFontSize(7); doc.setFont('helvetica','normal');
+  doc.text('SplitLedger — Fair splits made simple',W/2,285,{align:'center'});
+
+  doc.save(`splitledger-${new Date().toISOString().slice(0,10)}.pdf`);
+  toast('PDF downloaded ✓','var(--green)');
+}
+
+// ── WHATSAPP SHARE ───────────────────────────────────────────
+function shareWhatsApp() {
+  if (!state.members.length && !state.items.length) { toast('Nothing to share','var(--red)'); return; }
+
+  const balances = calculateBalances();
+  const txns     = settleDebts(balances);
+  const total    = state.items.reduce((s,i)=>s+i.price,0);
+  const date     = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+
+  let msg = `*🧾 SplitLedger — Bill Summary*\n`;
+  msg += `📅 ${date}\n`;
+  msg += `${'─'.repeat(30)}\n\n`;
+
+  msg += `*👥 Group:* ${state.members.map(m=>m.name).join(', ')}\n\n`;
+
+  msg += `*📋 Items:*\n`;
+  state.items.forEach(item => {
+    const per = item.participants.length ? ` (₹${(item.price/item.participants.length).toFixed(2)}/person)` : '';
+    msg += `  • *${item.name}* — ₹${item.price.toFixed(2)}${per}\n`;
+    msg += `    👤 ${item.participants.map(memberName).join(', ')}\n`;
+  });
+  if (!state.items.length) msg += `  (none)\n`;
+
+  msg += `\n*💳 Payments Made:*\n`;
+  if (state.payments.length) {
+    state.payments.forEach(p => msg += `  • ${memberName(p.payerId)}: ₹${p.amount.toFixed(2)}\n`);
+  } else {
+    msg += `  (none recorded)\n`;
+  }
+
+  msg += `\n*⚖️ Balances:* _(paid − share owed)_\n`;
+  msg += `  Total Bill: ₹${total.toFixed(2)}\n`;
+  state.members.forEach(m => {
+    const b = balances[m.id];
+    const emoji  = b.balance>0.005?'💚':b.balance<-0.005?'🔴':'✅';
+    const status = b.balance>0.005
+      ? `receives ₹${Math.abs(b.balance).toFixed(2)}`
+      : b.balance<-0.005
+        ? `owes ₹${Math.abs(b.balance).toFixed(2)}`
+        : 'settled ✓';
+    msg += `  ${emoji} *${m.name}*: paid ₹${b.paid.toFixed(2)}, share ₹${b.owed.toFixed(2)} → *${status}*\n`;
+  });
+
+  msg += `\n*💸 Settlement:*\n`;
+  if (txns.length) {
+    txns.forEach(t => msg += `  ➡️ *${memberName(t.from)}* pays *${memberName(t.to)}* — ₹${t.amount.toFixed(2)}\n`);
+  } else {
+    msg += `  ✅ All settled up! No transfers needed.\n`;
+  }
+
+  msg += `\n_Generated by SplitLedger_`;
+
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  toast('Opening WhatsApp…', 'var(--green)');
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+(function init() {
+  loadState();
+  if (state.equalSplit) {
+    const w=document.getElementById('participant-wrapper');
+    w.style.opacity='0.4'; w.style.pointerEvents='none';
+  }
+  renderAll();
+})();
+</script>
+</body>
+</html>
