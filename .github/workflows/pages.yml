@@ -17,12 +17,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v3
 
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to gh-pages branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: public
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+          branch: gh-pages
+          folder: public
+          clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}
