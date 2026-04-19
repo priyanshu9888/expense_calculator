@@ -3,10 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SplitLedger — Group Expense Tracker</title>
+<meta name="description" content="SplitLedger is a free group expense tracker and bill splitter for tracking shared costs, payments, and settlements among friends, roommates, and travel groups." />
+<meta name="keywords" content="group expense tracker, bill splitter, shared expenses, expense calculator, trip expense tracker, roommate expenses, split bill calculator" />
+<meta name="robots" content="index, follow" />
+<title>SplitLedger: Free Group Expense Tracker & Bill Splitter</title>
+<link rel="canonical" href="https://priyanshu9888.github.io/expense_calculator/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta property="og:title" content="SplitLedger — Free Group Expense Tracker" />
+<meta property="og:description" content="SplitLedger helps you split bills, track group payments, and settle expenses with friends and family." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://priyanshu9888.github.io/expense_calculator/" />
+<meta property="og:site_name" content="SplitLedger" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SplitLedger — Free Group Expense Tracker" />
+<meta name="twitter:description" content="SplitLedger helps you split bills, track group payments, and settle expenses with friends and family." />
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SplitLedger",
+    "url": "https://priyanshu9888.github.io/expense_calculator/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "SplitLedger is a free web-based group expense tracker and bill splitter. Track shared expenses, payments, and settlements for friends, travel groups, and roommates.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -31,6 +59,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--fu);min-height:100
 .logo-icon{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#0d0f14;font-weight:800}
 .logo span{color:var(--gold)}
 .header-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.hero{background:linear-gradient(135deg,rgba(240,180,41,.14),rgba(45,212,191,.08));border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:26px;display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;margin-bottom:26px}
+.hero h1{font-size:clamp(2rem,3vw,3rem);line-height:1.05;max-width:12ch;margin-bottom:14px}
+.hero p{max-width:42rem;color:var(--muted2);font-size:1rem;line-height:1.8;margin-bottom:18px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+.hero-stats{display:grid;gap:10px}
+.feature-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:13px 14px;color:var(--text);font-size:.92rem;font-weight:600}
+
+.about-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:grid;gap:14px;margin-top:24px}
+.about-section h2{font-size:1.05rem;color:var(--text)}
+.about-section p{color:var(--muted2);line-height:1.8}
 
 /* LAYOUT */
 .main{max-width:1180px;margin:0 auto;padding:26px 16px 80px}
@@ -195,6 +234,22 @@ select.input option{background:var(--bg3)}
   </div>
 </header>
 
+<section class="hero" id="hero">
+  <div>
+    <h1>SplitLedger — Free group expense tracker and bill splitter</h1>
+    <p>Track shared costs, split bills evenly or by share, record payments, and settle group expenses in seconds. Perfect for trips, roommates, parties, and shared household spending.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#member-input">Start tracking</a>
+      <a class="btn btn-ghost" href="#features">Why SplitLedger?</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="feature-card">Split bills across friends, roommates, family, and travel groups</div>
+    <div class="feature-card">Log payments, balances, and settlement instructions in one place</div>
+    <div class="feature-card">Export your expense summary as PDF or share via WhatsApp</div>
+  </div>
+</section>
+
 <main class="main">
   <div class="summary-strip">
     <div class="summary-card">
@@ -218,6 +273,12 @@ select.input option{background:var(--bg3)}
       <div class="summary-value" id="s-items">0</div>
     </div>
   </div>
+
+  <section class="about-section" id="features">
+    <h2>Built for shared expenses and group bill splitting</h2>
+    <p>SplitLedger is a lightweight expense calculator that runs entirely in your browser. Add members, assign item costs, record who paid, and see exactly what each person owes — no signup or installation required.</p>
+    <p>It is designed to help groups manage everyday spending, travel expenses, roommate bills, event costs, and group purchases with clarity and fairness.</p>
+  </section>
 
   <div class="grid">
     <div class="grid-left">
