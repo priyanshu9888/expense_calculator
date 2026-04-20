@@ -29,7 +29,10 @@
     .brand span{color:var(--accent)}
     .nav-links{display:flex;gap:16px;flex-wrap:wrap}
     .nav-links a{font-size:.92rem;color:var(--muted)}
+  .nav-links a:hover{color:var(--text)}
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center;padding:48px 48px 40px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:32px;box-shadow:var(--shadow);margin-bottom:40px}
+  .hero-copy{order:1}
+  .hero-mockup{order:2}
     .hero-copy{max-width:620px}
     .hero-title{font-size:clamp(2.6rem,5vw,4.5rem);line-height:1.02;letter-spacing:-.04em;margin-bottom:20px}
     .hero-text{font-size:1.05rem;color:var(--muted);margin-bottom:28px;max-width:44rem}
@@ -76,15 +79,16 @@
   .result-card strong{display:block;font-size:1.2rem;margin-bottom:10px}
   .result-card p{color:var(--muted);line-height:1.8}
   .footer{padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:.93rem;color:var(--muted)}
-    @media(max-width:980px){.hero{grid-template-columns:1fr;}.feature-grid{grid-template-columns:1fr}.use-case-list{grid-template-columns:1fr}.hero-mockup{min-height:360px}}    
-    @media(max-width:640px){.page{padding:24px 18px 48px}.hero{padding:28px}.hero-title{font-size:2.4rem}.hero-actions{flex-direction:column;align-items:stretch}.nav{flex-direction:column;align-items:flex-start}.nav-links{gap:12px}}
+    @media(max-width:980px){.hero{grid-template-columns:1fr;}.feature-grid{grid-template-columns:1fr}.use-case-list{grid-template-columns:1fr}.results-grid{grid-template-columns:1fr}.hero-mockup{min-height:360px}}    
+    @media(max-width:760px){.hero{padding:28px 24px}.hero-actions{flex-direction:column;align-items:stretch}.hero-title{font-size:2.2rem}.stats-strip{grid-template-columns:1fr}.hero-badge-row{flex-direction:column}.section-header{flex-direction:column;align-items:flex-start}.nav{flex-direction:column;align-items:flex-start}.nav-links{gap:12px}}    
+    @media(max-width:540px){.page{padding:20px 16px 40px}.hero{padding:22px;gap:22px}.hero-title{font-size:2rem}.hero-text{font-size:.98rem}.hero-mockup{min-height:auto;padding:20px}.mockup-stat{flex-direction:column;align-items:flex-start}.hero-actions .btn{width:100%}.hero-badge{width:100%;text-align:center}.result-card{padding:20px}.feature-card{padding:20px}.use-case{padding:20px}}
   </style>
 </head>
 <body>
   <div class="page">
     <nav class="nav">
       <div class="brand">Split<span>Ledger</span></div>
-      <div class="nav-links"><a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="expense.html">Open App</a></div>
+  <div class="nav-links"><a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="about.html">About</a><a href="blog.html">Blog</a><a href="expense.html">Open App</a></div>
     </nav>
 
     <section class="hero">
@@ -117,6 +121,19 @@
         </div>
       </div>
     </section>
+    <section id="articles" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Latest articles</h2>
+            <p class="section-subtitle">Read practical guides and tips for managing split expenses with your group.</p>
+          </div>
+        </div>
+        <div class="results-grid">
+          <div class="result-card"><strong><a href="article1.html">How to split group expenses fairly</a></strong><p>Discover the step-by-step method to create fair settlements when paying for shared meals, trips, or house bills.</p></div>
+          <div class="result-card"><strong><a href="article2.html">Top tips for roommates and shared budgets</a></strong><p>Learn best practices for tracking expenses and avoiding friction when sharing costs with roommates.</p></div>
+          <div class="result-card"><strong><a href="article3.html">Travel expense split calculator shortcuts</a></strong><p>Use these practical shortcuts to manage trip expenses quickly and make sure everyone pays their fair share.</p></div>
+        </div>
+      </section>
 
       <section class="section">
         <div class="section-header">
